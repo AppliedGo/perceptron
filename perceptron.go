@@ -66,12 +66,15 @@ func heaviside(f float32) int32 {
 	return 1
 }
 
-// ### The perceptron
-//
-// First we define the perceptron. A new perceptron uses random weights and biases that will be modified during the training process. The perceptron performs two tasks:
-//
-// * Process input signals
-// * Adjust the input weights as instructed by the "trainer".
+/*
+### The perceptron
+
+First we define the perceptron. A new perceptron uses random weights and biases that will be modified during the training process. The perceptron performs two tasks:
+
+* Process input signals
+* Adjust the input weights as instructed by the "trainer".
+
+*/
 
 // Our perceptron is a simple struct that holds the input weights and the bias.
 type Perceptron struct {
@@ -128,7 +131,6 @@ Without knowing anything about our line, the perceptron must learn to distinguis
 */
 
 // isAboveLine returns 1 if the point *(x,y)* is above the line *y = ax + b*, else 0.
-// f is the generated
 func isAboveLine(point []int32, f func(int32) int32) int32 {
 	x := point[0]
 	y := point[1]
@@ -138,7 +140,7 @@ func isAboveLine(point []int32, f func(int32) int32) int32 {
 	return 0
 }
 
-// To train the perceptron, we generate random points
+// To train the perceptron, we generate random points.
 func train(p *Perceptron) {
 
 	for i := 0; i < 1000; i++ {
