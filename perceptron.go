@@ -36,9 +36,9 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"time"
 
 	"github.com/appliedgo/perceptron/draw"
-	"github.com/davecgh/go-spew/spew"
 )
 
 // The learing rate adjusts the speed and quality of learning. Learing will be faster with higher values and more accurate with lower values.[^7]
@@ -109,7 +109,6 @@ func (p *Perceptron) Adjust(inputs []int32, delta int32) {
 		p.weights[i] += float32(input) * float32(delta) * learningRate
 	}
 	p.bias += float32(delta) * learningRate
-	spew.Println(p.bias, ", ", p.weights)
 }
 
 /* ### The task the perceptron shall solve
@@ -145,15 +144,14 @@ func train(p *Perceptron) {
 	for i := 0; i < 1000; i++ {
 		// Generate a random point between -100 and 100.
 		point := []int32{
-			rand.Int31n(201) - 100,
-			rand.Int31n(201) - 100,
+			rand.Int31n(201) - 101,
+			rand.Int31n(201) - 101,
 		}
 
 		// Feed the point to the perceptron and evaluate the result.
 		actual := p.Process(point)
 		expected := isAboveLine(point, f)
 
-		spew.Print(expected-actual, "\t")
 		// Have the perceptron adjust its internal values accordingly.
 		p.Adjust(point, expected-actual)
 	}
@@ -171,31 +169,38 @@ point correctly?
 func verify(p *Perceptron) int32 {
 	var correctAnswers int32 = 0
 
+	// Create a new drawing canvas.
 	c := draw.NewCanvas()
 	c.DrawLinearFunction(a, b)
 
 	for i := 0; i < 1000; i++ {
 		// Generate a random point between -100 and 100.
 		point := []int32{
-			rand.Int31n(201) - 100,
-			rand.Int31n(201) - 100,
+			rand.Int31n(201) - 101,
+			rand.Int31n(201) - 101,
 		}
 
 		// Feed the point to the perceptron and evaluate the result.
 		result := p.Process(point)
+		c.DrawPoint(point[0], point[1], result == 1)
 		if result == isAboveLine(point, f) {
-			c.DrawPoint(point[0], point[1], true)
 			correctAnswers += 1
 		} else {
-			c.DrawPoint(point[0], point[1], false)
 		}
 	}
+	// Save the image as `./result.png`.
 	c.Save()
+
 	return correctAnswers
 }
 
 // Main: Set up, train, and test the perceptron.
 func main() {
+
+	// Setup.
+	rand.Seed(time.Now().UnixNano())
+	a = rand.Int31n(11) - 6
+	b = rand.Int31n(51) - 26
 
 	// Create a new perceptron with two inputs (one for x and one for y).
 	p := NewPerceptron(2)
@@ -205,12 +210,14 @@ func main() {
 	// the correct answer.
 	train(p)
 
+	// Now the perceptron is ready for testing.
 	rate := float32(verify(p)) / 10
-
 	fmt.Printf("%.2f%% of the answers were correct.\n", rate)
 }
 
 /*
+Ensure to open `result.png` to see how the perceptron classified the points.
+
 ## Further reading
 
 [^1:] [Perceptrons](https://en.wikipedia.org/wiki/Perceptron)
