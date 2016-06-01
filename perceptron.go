@@ -24,8 +24,33 @@ Artificial Neural Networks have gained attention during the recent years, driven
 
 <!--more-->
 
-<!-- TODO -->
+### Artificial Neural Network basics
 
+The roots of Artificial Neural Networks (short: ANN's) date back to the 1940's [^ann].
+
+## What can neural networks do?
+
+
+## Neural networks must learn
+
+## Feed-forward networks
+
+
+
+### Neurons: The building blocks of neural networks
+
+#### Biology vs technology
+
+#### Inside an artificial neuron
+
+### The perceptron: things can get even simpler!
+
+
+### Can a single perceptron achieve anything?
+
+## Linearly classifiable data
+
+##
 
 ## The code: A perceptron for classifying points
 */
@@ -41,13 +66,8 @@ import (
 	"github.com/appliedgo/perceptron/draw"
 )
 
-// The learing rate adjusts the speed and quality of learning. Learing will be faster with higher values and more accurate with lower values.[^7]
-const (
-	learningRate = 0.1 // Allowed range: 0 < learningRate <= 1
-)
-
-// a and b specify the linear function that describes the separation line; see below for details.
 var (
+	// a and b specify the linear function that describes the separation line; see below for details.
 	a, b int32
 )
 
@@ -56,7 +76,7 @@ func f(x int32) int32 {
 	return a*x + b
 }
 
-// The Heaviside Step function[^3] returns zero if the input is negative
+// The Heaviside Step function[^heavi] returns zero if the input is negative
 // and one if the input is zero or positive.
 // This is our activation function for the perceptron.
 func heaviside(f float32) int32 {
@@ -107,7 +127,7 @@ func (p *Perceptron) Process(inputs []int32) int32 {
 }
 
 // Adjust the weights and the bias according to the difference between expected and observed result.
-func (p *Perceptron) Adjust(inputs []int32, delta int32) {
+func (p *Perceptron) Adjust(inputs []int32, delta int32, learningRate float32) {
 	for i, input := range inputs {
 		p.weights[i] += float32(input) * float32(delta) * learningRate
 	}
@@ -116,7 +136,7 @@ func (p *Perceptron) Adjust(inputs []int32, delta int32) {
 
 /* ### The task the perceptron shall solve
 
-Since a single perceptron can only classify data that is linearly separable[^6], we simply let it classify points in a two-dimensional space. That is, we define a separation line and train the perceptron to tell us whether a given point *(x,y)* is on one side of the line or on the other.
+Since a single perceptron can only classify data that is linearly separable[^linsep], we simply let it classify points in a two-dimensional space. That is, we define a separation line and train the perceptron to tell us whether a given point *(x,y)* is on one side of the line or on the other.
 We rule out the case where the line would be vertical. This allows us to specify the line as a linear function equation:
 
     y = ax + b
@@ -141,9 +161,9 @@ func isAboveLine(point []int32, f func(int32) int32) int32 {
 }
 
 // To train the perceptron, we generate random points.
-func train(p *Perceptron) {
+func train(p *Perceptron, iters int, rate float32) {
 
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < iters; i++ {
 		// Generate a random point between -100 and 100.
 		point := []int32{
 			rand.Int31n(201) - 101,
@@ -155,7 +175,7 @@ func train(p *Perceptron) {
 		expected := isAboveLine(point, f)
 
 		// Have the perceptron adjust its internal values accordingly.
-		p.Adjust(point, expected-actual)
+		p.Adjust(point, expected-actual, rate)
 	}
 }
 
@@ -168,14 +188,14 @@ point correctly?
 */
 
 // This is our test function. It returns the number of correct answers.
-func verify(p *Perceptron) int32 {
+func verify(p *Perceptron, iters int) int32 {
 	var correctAnswers int32 = 0
 
 	// Create a new drawing canvas.
 	c := draw.NewCanvas()
 	c.DrawLinearFunction(a, b)
 
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < iters; i++ {
 		// Generate a random point between -100 and 100.
 		point := []int32{
 			rand.Int31n(201) - 101,
@@ -199,40 +219,63 @@ func verify(p *Perceptron) int32 {
 // Main: Set up, train, and test the perceptron.
 func main() {
 
-	// Setup.
+	// The learing rate adjusts the speed and quality of learning. Learing will be faster with higher values and more accurate with lower values.[^backprop]
+	// Allowed range: 0 < learningRate <= 1
+	var learningRate float32 = 0.1
+
+	// Set the iterations.
+	trainings := 1000
+	verifications := 1000
+
+	// Set up the line parameters.
+	// a (the gradient of the line) can vary between -5 and 5,
+	// and b (the offset) between -50 and 50.
 	rand.Seed(time.Now().UnixNano())
 	a = rand.Int31n(11) - 6
-	b = rand.Int31n(51) - 26
+	b = rand.Int31n(101) - 51
 
 	// Create a new perceptron with two inputs (one for x and one for y).
-	p := NewPerceptron(2)
+	perceptron := NewPerceptron(2)
 
 	// TODO We first need to train the perceptron. The "trainer" knows the right answers
 	// to the training questions and tells the perceptron how much its guess was off
 	// the correct answer.
-	train(p)
+	train(perceptron, trainings, learningRate)
 
 	// Now the perceptron is ready for testing.
-	rate := float32(verify(p)) / 10
+	hits := verify(perceptron, verifications)
+	rate := float32(hits) / float32(verifications) * 100.0
 	fmt.Printf("%.2f%% of the answers were correct.\n", rate)
 }
 
 /*
 Ensure to open `result.png` to see how the perceptron classified the points.
 
+Run the code a few times to see if the accuracy of the results changes considerably.
+
+## Exercises
+
+1. Play with the number of training iterations!
+   * Will the accuracy increase if you train the perceptron 10,000 times?
+   * Try fewer iterations. What happens if you train the perceptron only 100 times? 10 times?
+   * What happens if you skip the training completely?
+
+2. Change the learning rate to 0.01, 0.2, 0.0001, 0.5, 1,... while keeping the training interations constant. Do you see the accuracy change?
+
+
 ## Further reading
 
-[^1:] [Perceptrons](https://en.wikipedia.org/wiki/Perceptron)
+[^ptron:] [Perceptrons](https://en.wikipedia.org/wiki/Perceptron)
 
-[^2:] [Artificial Neural Networks](https://en.wikipedia.org/wiki/Artificial_neural_network)
+[^ann:] [Artificial Neural Networks](https://en.wikipedia.org/wiki/Artificial_neural_network)
 
-[^3:] [The Heaviside Step function](https://en.wikipedia.org/wiki/Heaviside_step_function)
+[^heavi:] [The Heaviside Step function](https://en.wikipedia.org/wiki/Heaviside_step_function)
 
-[^4:] [Chapter 10](http://natureofcode.com/book/chapter-10-neural-networks/) of the book "The Nature Of Code"
+[^nature:] [Chapter 10](http://natureofcode.com/book/chapter-10-neural-networks/) of the book "The Nature Of Code"
 
-[^5:] [A neural network in 11 lines of Python](http://iamtrask.github.io/2015/07/12/basic-python-network/)
+[^eleven:] [A neural network in 11 lines of Python](http://iamtrask.github.io/2015/07/12/basic-python-network/)
 
-[^6:] [Linear separability](https://en.wikipedia.org/wiki/Linear_separability)
+[^linsep:] [Linear separability](https://en.wikipedia.org/wiki/Linear_separability)
 
-[^7:] [Backpropagation](https://en.wikipedia.org/wiki/Backpropagation)
+[^backprop:] [Backpropagation](https://en.wikipedia.org/wiki/Backpropagation)
 */
