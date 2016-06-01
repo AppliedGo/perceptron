@@ -24,18 +24,43 @@ Artificial Neural Networks have gained attention during the recent years, driven
 
 <!--more-->
 
-### Artificial Neural Network basics
+## Artificial neural networks as a model of the human brain
 
-The roots of Artificial Neural Networks (short: ANN's) date back to the 1940's [^ann].
+Have you ever wondered why there are tasks that are dead simple for any human but incredibly difficult for computers?
+Artificial neural networks (short: ANN's) were inspired by the central nervous system of humans. Like their biological counterpart, ANN's are built upon simple signal processing elements that are connected together into a large mesh.
 
 ## What can neural networks do?
 
+ANN's have been sucessfully applied to a number of problem domains:
+
+* Classify data by recognizing patterns
+* Detect anomalies or novelties, when test data does *not* match a learned pattern
+* Process signals, for example, by filtering, sepataring, or compressing
+* Approximate a target function--useful for predictions and forecasting
+
+Agreed, this sounds a bit abstract, so let's look at some real-world applications.
+Neural networks can -
+
+* identify faces,
+* recognize speech,
+* read your handwriting (mine perhaps not),
+* translate texts,
+* play games (typically board games or card games)
+* control autonomous vehicles and robots
+* and surely a couple more things!
+
+
+## The topology of a neural network
+
+There are many ways of knitting the nodes of a neural network together, and each way results in a more or less complex behavior. Possibly the simplest of all topologies is the feed-forward network. Signals flow in one direction only; there is never any feedback loop in the system. The following image shows a very simple network:
+
+![A feed-forward neural network](threelayernetwork.png)
+
+The ANN is organised into layers. The input layer picks up the input signals and passes them on to the next layer, the so-called 'hidden' layer. (Actually, there may be more than one hidden layer in a neural network.) Last comes the output layer that delivers the result.
+
+
 
 ## Neural networks must learn
-
-## Feed-forward networks
-
-
 
 ### Neurons: The building blocks of neural networks
 
@@ -102,11 +127,11 @@ type Perceptron struct {
 	bias    float32
 }
 
-// Create a new perceptron. Weights and bias are initialized with random values
+// Create a new perceptron with n inputs. Weights and bias are initialized with random values
 // between -1 and 1.
-func NewPerceptron(ni int32) *Perceptron {
+func NewPerceptron(n int32) *Perceptron {
 	var i int32
-	w := make([]float32, ni, ni)
+	w := make([]float32, n, n)
 	for i = 0; i < ni; i++ {
 		w[i] = rand.Float32()*2 - 1
 	}
@@ -126,7 +151,7 @@ func (p *Perceptron) Process(inputs []int32) int32 {
 	return heaviside(sum)
 }
 
-// Adjust the weights and the bias according to the difference between expected and observed result.
+// During the learning phase, the perceptron adjusts the weights and the bias based on how much the perceptron's answer differs from the correct answer.
 func (p *Perceptron) Adjust(inputs []int32, delta int32, learningRate float32) {
 	for i, input := range inputs {
 		p.weights[i] += float32(input) * float32(delta) * learningRate
@@ -141,7 +166,7 @@ We rule out the case where the line would be vertical. This allows us to specify
 
     y = ax + b
 
-`a` specifices how steep the line is, and `b` sets the offset. See these examples:
+Parameter `a` specifices how steep the line is, and `b` sets the offset. See these examples:
 
 ![Separation lines](separationlines.png)
 
@@ -150,7 +175,7 @@ Without knowing anything about our line, the perceptron must learn to distinguis
 ### Training functions
 */
 
-// isAboveLine returns 1 if the point *(x,y)* is above the line *y = ax + b*, else 0.
+// Function isAboveLine returns 1 if the point *(x,y)* is above the line *y = ax + b*, else 0. This is our teacher's solution manual.
 func isAboveLine(point []int32, f func(int32) int32) int32 {
 	x := point[0]
 	y := point[1]
@@ -160,7 +185,7 @@ func isAboveLine(point []int32, f func(int32) int32) int32 {
 	return 0
 }
 
-// To train the perceptron, we generate random points.
+// Function train is our teacher. The teacher generates random test points and feeds them to the perceptron. Then the teacher compares the answer against the solution from the 'solution manual'.
 func train(p *Perceptron, iters int, rate float32) {
 
 	for i := 0; i < iters; i++ {
@@ -183,19 +208,21 @@ func train(p *Perceptron, iters int, rate float32) {
 ### Showtime!
 
 Now it is time to see how well the perceptron has learned the task. Again we throw random points
-at it, but this time there is no feedback from the trainer. Will the perceptron classify every
+at it, but this time there is no feedback from the teacher. Will the perceptron classify every
 point correctly?
 */
 
 // This is our test function. It returns the number of correct answers.
-func verify(p *Perceptron, iters int) int32 {
+func verify(p *Perceptron) int32 {
 	var correctAnswers int32 = 0
 
-	// Create a new drawing canvas.
+	// Create a new drawing canvas. x and y range from -100 to 100.
 	c := draw.NewCanvas()
+
+	// Draw the separation line `y = a*x + b`.
 	c.DrawLinearFunction(a, b)
 
-	for i := 0; i < iters; i++ {
+	for i := 0; i < 1000; i++ {
 		// Generate a random point between -100 and 100.
 		point := []int32{
 			rand.Int31n(201) - 101,
@@ -219,14 +246,6 @@ func verify(p *Perceptron, iters int) int32 {
 // Main: Set up, train, and test the perceptron.
 func main() {
 
-	// The learing rate adjusts the speed and quality of learning. Learing will be faster with higher values and more accurate with lower values.[^backprop]
-	// Allowed range: 0 < learningRate <= 1
-	var learningRate float32 = 0.1
-
-	// Set the iterations.
-	trainings := 1000
-	verifications := 1000
-
 	// Set up the line parameters.
 	// a (the gradient of the line) can vary between -5 and 5,
 	// and b (the offset) between -50 and 50.
@@ -235,16 +254,18 @@ func main() {
 	b = rand.Int31n(101) - 51
 
 	// Create a new perceptron with two inputs (one for x and one for y).
-	perceptron := NewPerceptron(2)
+	p := NewPerceptron(2)
 
-	// TODO We first need to train the perceptron. The "trainer" knows the right answers
-	// to the training questions and tells the perceptron how much its guess was off
+	// First, the perceptron needs to learn. The 'teacher' knows the right answer
+	// to each training question and tells the perceptron how much its guess was off
 	// the correct answer.
-	train(perceptron, trainings, learningRate)
+	// Second parameter: number of training iterations.
+	// Third parameter: learning rate. Allowed range: 0 < learning rate <= 1.
+	train(p, 1000, 0.1)
 
 	// Now the perceptron is ready for testing.
-	hits := verify(perceptron, verifications)
-	rate := float32(hits) / float32(verifications) * 100.0
+	hits := verify(p)
+	rate := float32(hits) / 10 // divide by 1000 (num of iterations) then multiply by 100 to get the percent value.
 	fmt.Printf("%.2f%% of the answers were correct.\n", rate)
 }
 
