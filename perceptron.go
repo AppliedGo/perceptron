@@ -160,7 +160,7 @@ func train(p *Perceptron) {
 /*
 ### Showtime!
 
-Now it is time to see how well the perception has learned the task. Again we throw random points
+Now it is time to see how well the perceptron has learned the task. Again we throw random points
 at it, but this time there is no feedback from the trainer. Will the perceptron classify every
 point correctly?
 */
@@ -205,7 +205,7 @@ func main() {
 	// Create a new perceptron with two inputs (one for x and one for y).
 	p := NewPerceptron(2)
 
-	// TODO We first need to train the perception. The "trainer" knows the right answers
+	// TODO We first need to train the perceptron. The "trainer" knows the right answers
 	// to the training questions and tells the perceptron how much its guess was off
 	// the correct answer.
 	train(p)
