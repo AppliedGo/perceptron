@@ -28,21 +28,24 @@ func NewCanvas() Canvas {
 func (c *Canvas) DrawLinearFunction(ai, bi int32) {
 	a := float64(ai)
 	b := float64(bi)
-	c.dc.SetRGB(0, 0, 0)
-	c.dc.SetLineWidth(1)
+	c.dc.SetRGBA(0, 0, 0, 0.7)
+	c.dc.SetLineWidth(3)
 	c.dc.DrawLine(-100, a*(-100)+b, 100, a*100+b)
 	c.dc.Stroke()
 }
 
-func (c *Canvas) DrawPoint(xi, yi int32, filled bool) {
+func (c *Canvas) DrawPoint(xi, yi int32, above bool) {
 	x := float64(xi)
 	y := float64(yi)
 	c.dc.SetRGB(0, 0, 0)
 	c.dc.SetLineWidth(1)
 	c.dc.DrawCircle(x, y, 3)
-	if filled {
-		c.dc.Fill()
+	if above {
+		c.dc.SetRGB(1, 0.7, 0.5)
+	} else {
+		c.dc.SetRGB(0, 0, 0.7)
 	}
+	c.dc.Fill()
 	c.dc.Stroke()
 }
 

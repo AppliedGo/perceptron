@@ -20,14 +20,21 @@ tags = ["Pattern Recognition", "Neural Network", "Machine Learning"]
 categories = ["Tutorial"]
 +++
 
-Artificial Neural Networks have gained attention during the recent years, driven by advances in deep learning. But what is an Artificial Neural Network and what is it made of? Meet the perceptron.
+Artificial Neural Networks have gained attention during the recent years, driven by advances in deep learning. But what is an Artificial Neural Network and what is it made of?
+
+Meet the perceptron.
 
 <!--more-->
+
+In this article we'll have a quick look at artificial neural networks in general, then we examine a single neuron, and finally (this is the coding part) we take the most basic version of an artificial neuron, the perceptron, and make it classify points on a plane.
+
+But first, let me introduce the topic.
 
 ## Artificial neural networks as a model of the human brain
 
 Have you ever wondered why there are tasks that are dead simple for any human but incredibly difficult for computers?
 Artificial neural networks (short: ANN's) were inspired by the central nervous system of humans. Like their biological counterpart, ANN's are built upon simple signal processing elements that are connected together into a large mesh.
+
 
 ## What can neural networks do?
 
@@ -54,7 +61,7 @@ Neural networks can -
 
 There are many ways of knitting the nodes of a neural network together, and each way results in a more or less complex behavior. Possibly the simplest of all topologies is the feed-forward network. Signals flow in one direction only; there is never any loop in the signal paths.
 
-![A feed-forward neural network](threelayernetwork.png)
+![A feed-forward neural network](ffnn.png)
 
 Typically, ANN's have a layered structure. The input layer picks up the input signals and passes them on to the next layer, the so-called 'hidden' layer. (Actually, there may be more than one hidden layer in a neural network.) Last comes the output layer that delivers the result.
 
@@ -66,32 +73,59 @@ Unlike traditional algorithms, neural networks cannot be 'programmed' or 'config
 
 ### Supervised learning
 
-This strategy is useful for any kind of pattern matching. The neural network gets a set of test patterns with known results. It processes each test pattern and compares the output with the known result. Then the network makes adjustments according to how far it was off the known result, and repeats the training with the next pattern. After the training session, the network now should be able to find similar patterns in other data as well.
-
+The easiest way. Can be used if a (large enough) set of test data with known results exists. Then the learning goes like this: Process one dataset. Compare the output against the known result. Adjust the network and repeat.
+This is the learning strategy we'll use here.
 
 ### Unsupervised learning
 
-Sometimes a neural network needs to learn 'on the job', without any separate training phase. In biological terms, this would be unconcious learning. You don't open a schoolbook, you don't have a teacher who tells you were you are right or wrong. Instead, you just do something repeatedly and get better and better at it. Learning to balance a pencil at your fingertip would be an example of unsupervised learning.
-But can an artificial neural network have a notion of 'getting better at something'? It can--given that the task to be solved comes with a *cost function*. A cost function is a function that depends on assumptions about how the task can be solved. The output of the cost function tells the neural network how far it is off the track, even though there is no test data with known results at hand. The neural network must constantly try to minimize the cost function while performing its day job.
-
+Useful if no test data is readily available, and if it is possible to derive some kind of *cost function* from the desired behavior. The cost function tells the neural network how much ist is off the target. The network then can adjust its parameters on the fly while working on the real data.
 
 ### Reinforced learning
 
-The 'carrot and stick' method. Here, the neural network usually interacts with the environment; for example, by steering a vehicle. In this case the network's actions produce direct feedback, and the network has to infer from this feedback if the action was good or bad. If, for example, the vehicle bumps into a wall (a very undesired event), the neural network should learn to avoid that wall (or any wall) in the future.
+The 'carrot and stick' method. Can be used if the neural network generates continuous action. Follow the carrot in front of your nose! If you go the wrong way - ouch. Over time, the network learns to prefer the right kind of action and to avoid the wrong one.
 
 
-To summarize,
+Ok, now we know a bit about the nature of artificial neural networks, but what exactly are they made of? What do we see if we open the cover and peek inside?
 
 
 ## Neurons: The building blocks of neural networks
 
+The very basic ingredient of any artificial neural network is the artificial neuron. They are not only named after their biological counterparts but also are modeled after the behavior of the neurons in our brain.
 
 
 ### Biology vs technology
 
+Just like a biological neuron has dendrites to receive signals, a cell body to process them, and an axon to send signals out to other neurons, the artificial neuron has a number of input channels, a processing stage, and one output that can fan out to multiple other artificial neurons.
+
+![A biological and an artificial neuron](neuron.png)
+
+
 ### Inside an artificial neuron
 
+Let's zoom in further. How does the neuron process its input? You might be surprised to see how simple the calculations inside a neuron actually are. We can identify three processing steps:
+
+#### 1. Each input gets scaled up or down
+
+When a signal comes in, it gets multiplied by a *weight* value that is assigned to this particular input. That is, if a neuron has three inputs, then it has three weights that can be adjusted individually. During the learning phase, the neural network can adjust the weights based on the error of the last test result.
+
+#### 2. All signals are summed up
+
+In the next step, the modified input signals are summed up to a single value. In this step, an offset is also added to the sum. This offset is called *bias*. The neural network also adjusts the bias during the learning phase.
+
+This is where the magic happens! At the start, all the neurons have random weights and random biases. After each learning iteration, weights and biases are gradually shifted so that the next result is a bit closer to the desired output. This way, the neural network gradually moves towards
+
+3. Activation
+
+Finally, the result of the neuron's calculation is turned into an output signal. This is done by feeding the result to an activation function (also called transfer function). Typically (but not always), this function is a non-linear function. A very popular type of non-linear function used in neural networks is the sigmoid function[^sigmoid]:
+
+![The sigmoid function](sigmoidgraph.png)
+
+In simple terms, the sigmoid function maps any input to a value between -1 and 1. The non-linearity has some interesting properties in the context of neural networks, but for our coding exercise, it might be a bit too complex.
+
+
 ## The perceptron: things can get even simpler!
+
+
 
 
 ## Can a single perceptron achieve anything?
@@ -199,7 +233,7 @@ Without knowing anything about our line, the perceptron must learn to distinguis
 ### Training functions
 */
 
-// Function isAboveLine returns 1 if the point *(x,y)* is above the line *y = ax + b*, else 0. This is our teacher's solution manual.
+// Function `isAboveLine` returns 1 if the point *(x,y)* is above the line *y = ax + b*, else 0. This is our teacher's solution manual.
 func isAboveLine(point []int32, f func(int32) int32) int32 {
 	x := point[0]
 	y := point[1]
@@ -209,7 +243,7 @@ func isAboveLine(point []int32, f func(int32) int32) int32 {
 	return 0
 }
 
-// Function train is our teacher. The teacher generates random test points and feeds them to the perceptron. Then the teacher compares the answer against the solution from the 'solution manual'.
+// Function `train` is our teacher. The teacher generates random test points and feeds them to the perceptron. Then the teacher compares the answer against the solution from the 'solution manual' and tells the perceptron how far it is off.
 func train(p *Perceptron, iters int, rate float32) {
 
 	for i := 0; i < iters; i++ {
@@ -281,17 +315,15 @@ func main() {
 	// Create a new perceptron with two inputs (one for x and one for y).
 	p := NewPerceptron(2)
 
-	// First, the perceptron needs to learn. The 'teacher' knows the right answer
-	// to each training question and tells the perceptron how much its guess was off
-	// the correct answer.
-	// Second parameter: number of training iterations.
-	// Third parameter: learning rate. Allowed range: 0 < learning rate <= 1.
+	// Start learning.
+	iterations := 1000
+	var learningRate float32 = 0.1 // Allowed range: 0 < learning rate <= 1.
 	// **Try to play with these parameters!**
-	train(p, 1000, 0.1)
+	train(p, iterations, learningRate)
 
 	// Now the perceptron is ready for testing.
-	rate := verify(p)
-	fmt.Printf("%d%% of the answers were correct.\n", rate)
+	successRate := verify(p)
+	fmt.Printf("%d%% of the answers were correct.\n", successRate)
 }
 
 /*
@@ -311,17 +343,19 @@ Run the code a few times to see if the accuracy of the results changes considera
 
 ## Further reading
 
-[^ptron]: [Perceptrons](https://en.wikipedia.org/wiki/Perceptron)
+[^ptron]: [Perceptrons on Wikipedia](https://en.wikipedia.org/wiki/Perceptron)
 
-[^ann]: [Artificial Neural Networks](https://en.wikipedia.org/wiki/Artificial_neural_network)
+[^ann]: [Artificial Neural Networks on Wikipedia](https://en.wikipedia.org/wiki/Artificial_neural_network)
 
-[^heavi]: [The Heaviside Step function](https://en.wikipedia.org/wiki/Heaviside_step_function)
+[^heavi]: [The Heaviside Step function on Wikipedia](https://en.wikipedia.org/wiki/Heaviside_step_function)
 
 [^nature]: [Chapter 10](http://natureofcode.com/book/chapter-10-neural-networks/) of the book "The Nature Of Code"
 
 [^eleven]: [A neural network in 11 lines of Python](http://iamtrask.github.io/2015/07/12/basic-python-network/)
 
-[^linsep]: [Linear separability](https://en.wikipedia.org/wiki/Linear_separability)
+[^linsep]: [Linear separability on Wikipedia](https://en.wikipedia.org/wiki/Linear_separability)
 
-[^backprop]: [Backpropagation](https://en.wikipedia.org/wiki/Backpropagation)
+[^backprop]: [Backpropagation on Wikipedia](https://en.wikipedia.org/wiki/Backpropagation)
+
+[^sigmoid]: [The Sigmoid function on Wikipedia](https://en.wikipedia.org/wiki/Sigmoid_function)
 */
