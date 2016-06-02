@@ -33,10 +33,10 @@ Artificial neural networks (short: ANN's) were inspired by the central nervous s
 
 ANN's have been sucessfully applied to a number of problem domains:
 
-* Classify data by recognizing patterns
-* Detect anomalies or novelties, when test data does *not* match a learned pattern
-* Process signals, for example, by filtering, sepataring, or compressing
-* Approximate a target function--useful for predictions and forecasting
+* Classify data by recognizing patterns. Is this a tree on that picture?
+* Detect anomalies or novelties, when test data does *not* match the usual patterns. Is the truck driver at the risk of falling asleep? Are these seismic events showing normal ground motion or a big earthquake?
+* Process signals, for example, by filtering, sepataring, or compressing.
+* Approximate a target function--useful for predictions and forecasting. Will this storm turn into a tornado?
 
 Agreed, this sounds a bit abstract, so let's look at some real-world applications.
 Neural networks can -
@@ -52,30 +52,52 @@ Neural networks can -
 
 ## The topology of a neural network
 
-There are many ways of knitting the nodes of a neural network together, and each way results in a more or less complex behavior. Possibly the simplest of all topologies is the feed-forward network. Signals flow in one direction only; there is never any feedback loop in the system. The following image shows a very simple network:
+There are many ways of knitting the nodes of a neural network together, and each way results in a more or less complex behavior. Possibly the simplest of all topologies is the feed-forward network. Signals flow in one direction only; there is never any loop in the signal paths.
 
 ![A feed-forward neural network](threelayernetwork.png)
 
-The ANN is organised into layers. The input layer picks up the input signals and passes them on to the next layer, the so-called 'hidden' layer. (Actually, there may be more than one hidden layer in a neural network.) Last comes the output layer that delivers the result.
-
+Typically, ANN's have a layered structure. The input layer picks up the input signals and passes them on to the next layer, the so-called 'hidden' layer. (Actually, there may be more than one hidden layer in a neural network.) Last comes the output layer that delivers the result.
 
 
 ## Neural networks must learn
 
-### Neurons: The building blocks of neural networks
-
-#### Biology vs technology
-
-#### Inside an artificial neuron
-
-### The perceptron: things can get even simpler!
+Unlike traditional algorithms, neural networks cannot be 'programmed' or 'configured' to work in the intended way. Just like human brains, they have to learn how to accomplish a task. Roughly speaking, there are three learning strategies:
 
 
-### Can a single perceptron achieve anything?
+### Supervised learning
+
+This strategy is useful for any kind of pattern matching. The neural network gets a set of test patterns with known results. It processes each test pattern and compares the output with the known result. Then the network makes adjustments according to how far it was off the known result, and repeats the training with the next pattern. After the training session, the network now should be able to find similar patterns in other data as well.
+
+
+### Unsupervised learning
+
+Sometimes a neural network needs to learn 'on the job', without any separate training phase. In biological terms, this would be unconcious learning. You don't open a schoolbook, you don't have a teacher who tells you were you are right or wrong. Instead, you just do something repeatedly and get better and better at it. Learning to balance a pencil at your fingertip would be an example of unsupervised learning.
+But can an artificial neural network have a notion of 'getting better at something'? It can--given that the task to be solved comes with a *cost function*. A cost function is a function that depends on assumptions about how the task can be solved. The output of the cost function tells the neural network how far it is off the track, even though there is no test data with known results at hand. The neural network must constantly try to minimize the cost function while performing its day job.
+
+
+### Reinforced learning
+
+The 'carrot and stick' method. Here, the neural network usually interacts with the environment; for example, by steering a vehicle. In this case the network's actions produce direct feedback, and the network has to infer from this feedback if the action was good or bad. If, for example, the vehicle bumps into a wall (a very undesired event), the neural network should learn to avoid that wall (or any wall) in the future.
+
+
+To summarize,
+
+
+## Neurons: The building blocks of neural networks
+
+
+
+### Biology vs technology
+
+### Inside an artificial neuron
+
+## The perceptron: things can get even simpler!
+
+
+## Can a single perceptron achieve anything?
 
 ## Linearly classifiable data
 
-##
 
 ## The code: A perceptron for classifying points
 */
@@ -101,16 +123,6 @@ func f(x int32) int32 {
 	return a*x + b
 }
 
-// The Heaviside Step function[^heavi] returns zero if the input is negative
-// and one if the input is zero or positive.
-// This is our activation function for the perceptron.
-func heaviside(f float32) int32 {
-	if f < 0 {
-		return 0
-	}
-	return 1
-}
-
 /*
 ### The perceptron
 
@@ -127,12 +139,23 @@ type Perceptron struct {
 	bias    float32
 }
 
+// The Heaviside Step function[^heavi] returns zero if the input is negative
+// and one if the input is zero or positive.
+// This is our activation function for the perceptron, used by the Process
+// method below.
+func (p *Perceptron) heaviside(f float32) int32 {
+	if f < 0 {
+		return 0
+	}
+	return 1
+}
+
 // Create a new perceptron with n inputs. Weights and bias are initialized with random values
 // between -1 and 1.
 func NewPerceptron(n int32) *Perceptron {
 	var i int32
 	w := make([]float32, n, n)
-	for i = 0; i < ni; i++ {
+	for i = 0; i < n; i++ {
 		w[i] = rand.Float32()*2 - 1
 	}
 	return &Perceptron{
@@ -141,14 +164,15 @@ func NewPerceptron(n int32) *Perceptron {
 	}
 }
 
-// The basic task of a perceptron is to process the input signals and generate an output signal.
-// The activation function is a simple yes/no decision, so the output will be either 0 or 1.
+// The basic task of a perceptron is to process the input signals and generate a binary output signal.
+// For our scenario, the perceptron shall return 1 if the weighted and biased sum of the input signals
+// is equal or above zero, and 0 otherwise.
 func (p *Perceptron) Process(inputs []int32) int32 {
 	sum := p.bias
 	for i, input := range inputs {
 		sum += float32(input) * p.weights[i]
 	}
-	return heaviside(sum)
+	return p.heaviside(sum)
 }
 
 // During the learning phase, the perceptron adjusts the weights and the bias based on how much the perceptron's answer differs from the correct answer.
@@ -219,10 +243,7 @@ func verify(p *Perceptron) int32 {
 	// Create a new drawing canvas. x and y range from -100 to 100.
 	c := draw.NewCanvas()
 
-	// Draw the separation line `y = a*x + b`.
-	c.DrawLinearFunction(a, b)
-
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 100; i++ {
 		// Generate a random point between -100 and 100.
 		point := []int32{
 			rand.Int31n(201) - 101,
@@ -237,6 +258,10 @@ func verify(p *Perceptron) int32 {
 		} else {
 		}
 	}
+
+	// Draw the separation line `y = a*x + b`.
+	c.DrawLinearFunction(a, b)
+
 	// Save the image as `./result.png`.
 	c.Save()
 
@@ -261,12 +286,12 @@ func main() {
 	// the correct answer.
 	// Second parameter: number of training iterations.
 	// Third parameter: learning rate. Allowed range: 0 < learning rate <= 1.
+	// **Try to play with these parameters!**
 	train(p, 1000, 0.1)
 
 	// Now the perceptron is ready for testing.
-	hits := verify(p)
-	rate := float32(hits) / 10 // divide by 1000 (num of iterations) then multiply by 100 to get the percent value.
-	fmt.Printf("%.2f%% of the answers were correct.\n", rate)
+	rate := verify(p)
+	fmt.Printf("%d%% of the answers were correct.\n", rate)
 }
 
 /*
@@ -286,17 +311,17 @@ Run the code a few times to see if the accuracy of the results changes considera
 
 ## Further reading
 
-[^ptron:] [Perceptrons](https://en.wikipedia.org/wiki/Perceptron)
+[^ptron]: [Perceptrons](https://en.wikipedia.org/wiki/Perceptron)
 
-[^ann:] [Artificial Neural Networks](https://en.wikipedia.org/wiki/Artificial_neural_network)
+[^ann]: [Artificial Neural Networks](https://en.wikipedia.org/wiki/Artificial_neural_network)
 
-[^heavi:] [The Heaviside Step function](https://en.wikipedia.org/wiki/Heaviside_step_function)
+[^heavi]: [The Heaviside Step function](https://en.wikipedia.org/wiki/Heaviside_step_function)
 
-[^nature:] [Chapter 10](http://natureofcode.com/book/chapter-10-neural-networks/) of the book "The Nature Of Code"
+[^nature]: [Chapter 10](http://natureofcode.com/book/chapter-10-neural-networks/) of the book "The Nature Of Code"
 
-[^eleven:] [A neural network in 11 lines of Python](http://iamtrask.github.io/2015/07/12/basic-python-network/)
+[^eleven]: [A neural network in 11 lines of Python](http://iamtrask.github.io/2015/07/12/basic-python-network/)
 
-[^linsep:] [Linear separability](https://en.wikipedia.org/wiki/Linear_separability)
+[^linsep]: [Linear separability](https://en.wikipedia.org/wiki/Linear_separability)
 
-[^backprop:] [Backpropagation](https://en.wikipedia.org/wiki/Backpropagation)
+[^backprop]: [Backpropagation](https://en.wikipedia.org/wiki/Backpropagation)
 */
