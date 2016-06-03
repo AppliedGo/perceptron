@@ -26,14 +26,14 @@ Meet the perceptron.
 
 <!--more-->
 
-In this article we'll have a quick look at artificial neural networks in general, then we examine a single neuron, and finally (this is the coding part) we take the most basic version of an artificial neuron, the perceptron, and make it classify points on a plane.
+In this article we'll have a quick look at artificial neural networks in general, then we examine a single neuron, and finally (this is the coding part) we take the most basic version of an artificial neuron, the perceptron[^ptron], and make it classify points on a plane.
 
 But first, let me introduce the topic.
 
 ## Artificial neural networks as a model of the human brain
 
 Have you ever wondered why there are tasks that are dead simple for any human but incredibly difficult for computers?
-Artificial neural networks (short: ANN's) were inspired by the central nervous system of humans. Like their biological counterpart, ANN's are built upon simple signal processing elements that are connected together into a large mesh.
+Artificial neural networks (short: ANN's)[^ann] were inspired by the central nervous system of humans. Like their biological counterpart, ANN's are built upon simple signal processing elements that are connected together into a large mesh.
 
 
 ## What can neural networks do?
@@ -114,29 +114,51 @@ In the next step, the modified input signals are summed up to a single value. In
 
 This is where the magic happens! At the start, all the neurons have random weights and random biases. After each learning iteration, weights and biases are gradually shifted so that the next result is a bit closer to the desired output. This way, the neural network gradually moves towards
 
-3. Activation
+#### 3. Activation
 
 Finally, the result of the neuron's calculation is turned into an output signal. This is done by feeding the result to an activation function (also called transfer function). Typically (but not always), this function is a non-linear function. A very popular type of non-linear function used in neural networks is the sigmoid function[^sigmoid]:
 
 ![The sigmoid function](sigmoidgraph.png)
 
-In simple terms, the sigmoid function maps any input to a value between -1 and 1. The non-linearity has some interesting properties in the context of neural networks, but for our coding exercise, it might be a bit too complex.
+In simple terms, the sigmoid function maps any input to a value between -1 and 1.
+
+The non-linearity of the sigmoid function has some interesting properties in the context of neural networks, but for our coding exercise, it is a bit too complex. Can we use some simpler activation function instead?
 
 
-## The perceptron: things can get even simpler!
+## The perceptron
+
+In fact, we can. We can even go as far as using a plain yes/no function like this one:
+
+![The Heaviside Step function](heaviside.png)
+
+Despite looking so simple, the function has a quite elaborate name: The Heaviside Step function[^heavi]. This function returns 1 if the input is positive or zero, and 0 for any negative input. Here, "input" means the input to the function itself, which is sum of all weighted input signals plus the bias; remember processing steps 1 and 2 above.
+
+So in summary, the perceptron is a function that maps an input vector (in1, in2,... in&lt;n>) to a single binary value.
 
 
+## Can we do something useful with a single perceptron?
 
+There is indeed a class of problems that a single perceptron can solve. Consider the input vector as the coordinates of a point. For a vector with n elements, this point would live in an n-dimensional space. To make life (and the code below) easier, let's assume a two-dimensional plane. Like a sheet of paper.
 
-## Can a single perceptron achieve anything?
+Further consider that we draw a number of random points on this plane, and we separate them into two groups by drawing a straight line across the paper:
 
-## Linearly classifiable data
+![Points on the paper, and a line across](pointsandline.png)
+
+This is our assignment for the perceptron we are going to implement.
+
+First, the perceptron shall learn where the line is, and then it shall tell us for any new point whether it is above or below the line.
+
+Imagine that: A single perceptron already can learn how to classify points!
+
+Let's jump right into coding, to see how.
 
 
 ## The code: A perceptron for classifying points
+
+### Imports
 */
 
-// ### Imports and globals
+// Besides standard libraries, we only need a small custom library for drawing the perceptron's output to a PNG.
 package main
 
 import (
@@ -146,16 +168,6 @@ import (
 
 	"github.com/appliedgo/perceptron/draw"
 )
-
-var (
-	// a and b specify the linear function that describes the separation line; see below for details.
-	a, b int32
-)
-
-// The separation line is described as a linear function of the form `y = ax + b`.
-func f(x int32) int32 {
-	return a*x + b
-}
 
 /*
 ### The perceptron
@@ -173,10 +185,7 @@ type Perceptron struct {
 	bias    float32
 }
 
-// The Heaviside Step function[^heavi] returns zero if the input is negative
-// and one if the input is zero or positive.
-// This is our activation function for the perceptron, used by the Process
-// method below.
+// This is the Heaviside Step function.
 func (p *Perceptron) heaviside(f float32) int32 {
 	if f < 0 {
 		return 0
@@ -198,9 +207,10 @@ func NewPerceptron(n int32) *Perceptron {
 	}
 }
 
-// The basic task of a perceptron is to process the input signals and generate a binary output signal.
-// For our scenario, the perceptron shall return 1 if the weighted and biased sum of the input signals
-// is equal or above zero, and 0 otherwise.
+// `Process` implements the core functionality of the perceptron. It weighs the input signals,
+// sums them up, adds the bias, and runs the result through the Heaviside Step function.
+// (The return value could be a boolean but is an int32 instead, so that we can directly
+// use the value for adjusting the perceptron.)
 func (p *Perceptron) Process(inputs []int32) int32 {
 	sum := p.bias
 	for i, input := range inputs {
@@ -217,21 +227,33 @@ func (p *Perceptron) Adjust(inputs []int32, delta int32, learningRate float32) {
 	p.bias += float32(delta) * learningRate
 }
 
-/* ### The task the perceptron shall solve
+/* ### Training
 
-Since a single perceptron can only classify data that is linearly separable[^linsep], we simply let it classify points in a two-dimensional space. That is, we define a separation line and train the perceptron to tell us whether a given point *(x,y)* is on one side of the line or on the other.
 We rule out the case where the line would be vertical. This allows us to specify the line as a linear function equation:
 
     y = ax + b
 
-Parameter `a` specifices how steep the line is, and `b` sets the offset. See these examples:
+Parameter *a* specifices the gradient of the line (that is, how steep the line is), and *b* sets the offset.
 
-![Separation lines](separationlines.png)
+By describing the line this way, checking whether a given point is above or below the line becomes very easy. For a point *(x,y)*, if the value of *y* is larger than the result of *f(x)*, then *(x,y)* is above the line.
 
-Without knowing anything about our line, the perceptron must learn to distinguish between those points above the line and those points below. Hence we need to train the perceptron.
+See these examples:
 
-### Training functions
+![Lines expressed through y = ax + b](separationlines.png)
+
 */
+
+// *a* and *b* specify the linear function that describes the separation line; see below for details.
+// They are defined at global level because we need them in several places and I do not want to
+// clutter the parameter lists unnecessarily.
+var (
+	a, b int32
+)
+
+// This function describes the separation line.
+func f(x int32) int32 {
+	return a*x + b
+}
 
 // Function `isAboveLine` returns 1 if the point *(x,y)* is above the line *y = ax + b*, else 0. This is our teacher's solution manual.
 func isAboveLine(point []int32, f func(int32) int32) int32 {
@@ -274,7 +296,7 @@ point correctly?
 func verify(p *Perceptron) int32 {
 	var correctAnswers int32 = 0
 
-	// Create a new drawing canvas. x and y range from -100 to 100.
+	// Create a new drawing canvas. Both *x* and *y* range from -100 to 100.
 	c := draw.NewCanvas()
 
 	for i := 0; i < 100; i++ {
@@ -286,14 +308,15 @@ func verify(p *Perceptron) int32 {
 
 		// Feed the point to the perceptron and evaluate the result.
 		result := p.Process(point)
-		c.DrawPoint(point[0], point[1], result == 1)
 		if result == isAboveLine(point, f) {
 			correctAnswers += 1
-		} else {
 		}
+
+		// Draw the point. The colour tells whether the perceptron answered 'is above' or 'is below'.
+		c.DrawPoint(point[0], point[1], result == 1)
 	}
 
-	// Draw the separation line `y = a*x + b`.
+	// Draw the separation line *y = ax + b*.
 	c.DrawLinearFunction(a, b)
 
 	// Save the image as `./result.png`.
@@ -341,17 +364,25 @@ Run the code a few times to see if the accuracy of the results changes considera
 2. Change the learning rate to 0.01, 0.2, 0.0001, 0.5, 1,... while keeping the training interations constant. Do you see the accuracy change?
 
 
+**I hope you enjoyed this post. Have fun exploring Go!**
+
+
 ## Further reading
+
+[Chapter 10](http://natureofcode.com/book/chapter-10-neural-networks/) of the book "The Nature Of Code" gave me the idea to focus on a single perceptron only, rather than modelling a whole network. Also a good introductory read on neural networks.
+
+You *can* write a complete network in a few lines of code, as demonstrated in
+[A neural network in 11 lines of Python](http://iamtrask.github.io/2015/07/12/basic-python-network/)
+--however, to be fair, the code is backed by a large numeric library!
+
+
+<!-- footnotes -->
 
 [^ptron]: [Perceptrons on Wikipedia](https://en.wikipedia.org/wiki/Perceptron)
 
 [^ann]: [Artificial Neural Networks on Wikipedia](https://en.wikipedia.org/wiki/Artificial_neural_network)
 
 [^heavi]: [The Heaviside Step function on Wikipedia](https://en.wikipedia.org/wiki/Heaviside_step_function)
-
-[^nature]: [Chapter 10](http://natureofcode.com/book/chapter-10-neural-networks/) of the book "The Nature Of Code"
-
-[^eleven]: [A neural network in 11 lines of Python](http://iamtrask.github.io/2015/07/12/basic-python-network/)
 
 [^linsep]: [Linear separability on Wikipedia](https://en.wikipedia.org/wiki/Linear_separability)
 
