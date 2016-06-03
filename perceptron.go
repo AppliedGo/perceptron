@@ -350,7 +350,14 @@ func main() {
 }
 
 /*
-Ensure to open `result.png` to see how the perceptron classified the points.
+You can get the full code from GitHub:
+
+    go get -d github.com/appliedgo/perceptron
+	cd $GOPATH/github.com/appliedgo/perceptron
+	go build
+	./perceptron
+
+Then open `result.png` to see how well the perceptron classified the points.
 
 Run the code a few times to see if the accuracy of the results changes considerably.
 
