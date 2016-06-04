@@ -116,37 +116,29 @@ This is where the magic happens! At the start, all the neurons have random weigh
 
 #### 3. Activation
 
-Finally, the result of the neuron's calculation is turned into an output signal. This is done by feeding the result to an activation function (also called transfer function). Typically (but not always), this function is a non-linear function. A very popular type of non-linear function used in neural networks is the sigmoid function[^sigmoid]:
-
-![The sigmoid function](sigmoidgraph.png)
-
-In simple terms, the sigmoid function maps any input to a value between -1 and 1.
-
-The non-linearity of the sigmoid function has some interesting properties in the context of neural networks, but for our coding exercise, it is a bit too complex. Can we use some simpler activation function instead?
-
+Finally, the result of the neuron's calculation is turned into an output signal. This is done by feeding the result to an activation function (also called transfer function).
 
 ## The perceptron
 
-In fact, we can. We can even go as far as using a plain yes/no function like this one:
+The most basic form of an activation function is a simple binary function that has only two possible results.
 
 ![The Heaviside Step function](heaviside.png)
 
-Despite looking so simple, the function has a quite elaborate name: The Heaviside Step function[^heavi]. This function returns 1 if the input is positive or zero, and 0 for any negative input. Here, "input" means the input to the function itself, which is sum of all weighted input signals plus the bias; remember processing steps 1 and 2 above.
-
-So in summary, the perceptron is a function that maps an input vector (in1, in2,... in&lt;n>) to a single binary value.
-
+Despite looking so simple, the function has a quite elaborate name: The Heaviside Step function[^heavi]. This function returns 1 if the input is positive or zero, and 0 for any negative input. A neuron whose actication function is a function like this is called a *perceptron*.
 
 ## Can we do something useful with a single perceptron?
 
+If you think about it, it looks as if the perceptron consumes a lot of information for very little output - just 0 or 1. How could this ever be useful on its own?
+
 There is indeed a class of problems that a single perceptron can solve. Consider the input vector as the coordinates of a point. For a vector with n elements, this point would live in an n-dimensional space. To make life (and the code below) easier, let's assume a two-dimensional plane. Like a sheet of paper.
 
-Further consider that we draw a number of random points on this plane, and we separate them into two groups by drawing a straight line across the paper:
+Further consider that we draw a number of random points on this plane, and we separate them into two sets by drawing a straight line across the paper:
 
 ![Points on the paper, and a line across](pointsandline.png)
 
-This is our assignment for the perceptron we are going to implement.
+This line divides the points into two sets, one above and one below the line. (The two sets are then called *linearly separable*[^linsep].)
 
-First, the perceptron shall learn where the line is, and then it shall tell us for any new point whether it is above or below the line.
+A single perceptron, as bare and simple as it might appear, is able to learn where this line is, and when it finished learning, it can tell whether a given point is above or below that line.
 
 Imagine that: A single perceptron already can learn how to classify points!
 
@@ -158,7 +150,7 @@ Let's jump right into coding, to see how.
 ### Imports
 */
 
-// Besides standard libraries, we only need a small custom library for drawing the perceptron's output to a PNG.
+// Besides a few standard libraries, we only need a small custom library for drawing the perceptron's output to a PNG.
 package main
 
 import (
@@ -374,6 +366,11 @@ Run the code a few times to see if the accuracy of the results changes considera
 **I hope you enjoyed this post. Have fun exploring Go!**
 
 
+## Neural network libraries
+
+There seem to be a number of popular neural network libraries on GitHub (where the property "popular" is solely determined from the number of stars a repository has). Just [search on GitHub](https://github.com/search?o=desc&q=language%3Ago+neural&s=stars&type=Repositories&utf8=%E2%9C%93) to find them all.
+
+
 ## Further reading
 
 [Chapter 10](http://natureofcode.com/book/chapter-10-neural-networks/) of the book "The Nature Of Code" gave me the idea to focus on a single perceptron only, rather than modelling a whole network. Also a good introductory read on neural networks.
@@ -381,6 +378,9 @@ Run the code a few times to see if the accuracy of the results changes considera
 You *can* write a complete network in a few lines of code, as demonstrated in
 [A neural network in 11 lines of Python](http://iamtrask.github.io/2015/07/12/basic-python-network/)
 --however, to be fair, the code is backed by a large numeric library!
+
+If you want to learn how a neuron with a sigmoid activation function works and how to build a small neural network based on such neurons, there is a three-part tutorial about that on Medium, starting with the post [How to build a simple neural network in 9 lines of Python code](https://medium.com/technology-invention-and-more/how-to-build-a-simple-neural-network-in-9-lines-of-python-code-cc8f23647ca1#.qvxmhqeuu).
+
 
 
 <!-- footnotes -->
