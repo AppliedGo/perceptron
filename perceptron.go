@@ -12,7 +12,7 @@ whose licenses are provided in the respective license files.
 title = "Perceptrons - the most basic form of a neural network"
 description = "A Go implementation of a perceptron as the building block of neural networks and as the most basic form of pattern recognition and machine learning."
 author = "Christoph Berger"
-email = "chris@appliedgo.com"
+email = "chris@appliedgo.net"
 date = "2016-06-09"
 publishdate = "2016-06-09"
 domains = ["Artificial Intelligence"]
@@ -368,7 +368,7 @@ Run the code a few times to see if the accuracy of the results changes considera
 
 ## Neural network libraries
 
-There seem to be a number of popular neural network libraries on GitHub (where the property "popular" is solely determined from the number of stars a repository has). Just [search on GitHub](https://github.com/search?o=desc&q=language%3Ago+neural&s=stars&type=Repositories&utf8=%E2%9C%93) to find them all.
+A number of neural network libraries [can be found on GitHub](https://github.com/search?o=desc&q=language%3Ago+neural&s=stars&type=Repositories&utf8=%E2%9C%93).
 
 
 ## Further reading
