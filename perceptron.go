@@ -104,6 +104,8 @@ Just like a biological neuron has dendrites to receive signals, a cell body to p
 
 Let's zoom in further. How does the neuron process its input? You might be surprised to see how simple the calculations inside a neuron actually are. We can identify three processing steps:
 
+HYPE[How a neuron works](howaneuronworks.html)
+
 #### 1. Each input gets scaled up or down
 
 When a signal comes in, it gets multiplied by a *weight* value that is assigned to this particular input. That is, if a neuron has three inputs, then it has three weights that can be adjusted individually. During the learning phase, the neural network can adjust the weights based on the error of the last test result.
