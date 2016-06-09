@@ -344,7 +344,7 @@ func main() {
 }
 
 /*
-You can get the full code from GitHub:
+You can get the full code from [GitHub](https://github.com/appliedgo/perceptron "Perceptron on GitHub"):
 
     go get -d github.com/appliedgo/perceptron
 	cd $GOPATH/github.com/appliedgo/perceptron
