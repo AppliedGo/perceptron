@@ -26,14 +26,14 @@ Meet the perceptron.
 
 <!--more-->
 
-In this article we'll have a quick look at artificial neural networks in general, then we examine a single neuron, and finally (this is the coding part) we take the most basic version of an artificial neuron, the perceptron[^ptron], and make it classify points on a plane.
+In this article we'll have a quick look at artificial neural networks in general, then we examine a single neuron, and finally (this is the coding part) we take the most basic version of an artificial neuron, the [perceptron][ptron], and make it classify points on a plane.
 
 But first, let me introduce the topic.
 
 ## Artificial neural networks as a model of the human brain
 
 Have you ever wondered why there are tasks that are dead simple for any human but incredibly difficult for computers?
-Artificial neural networks (short: ANN's)[^ann] were inspired by the central nervous system of humans. Like their biological counterpart, ANN's are built upon simple signal processing elements that are connected together into a large mesh.
+[Artificial neural networks][ann]  (short: ANN's) were inspired by the central nervous system of humans. Like their biological counterpart, ANN's are built upon simple signal processing elements that are connected together into a large mesh.
 
 
 ## What can neural networks do?
@@ -126,7 +126,7 @@ The most basic form of an activation function is a simple binary function that h
 
 ![The Heaviside Step function](heaviside.png)
 
-Despite looking so simple, the function has a quite elaborate name: The Heaviside Step function[^heavi]. This function returns 1 if the input is positive or zero, and 0 for any negative input. A neuron whose actication function is a function like this is called a *perceptron*.
+Despite looking so simple, the function has a quite elaborate name: The [Heaviside Step function][heavi]. This function returns 1 if the input is positive or zero, and 0 for any negative input. A neuron whose actication function is a function like this is called a *perceptron*.
 
 ## Can we do something useful with a single perceptron?
 
@@ -138,7 +138,7 @@ Further consider that we draw a number of random points on this plane, and we se
 
 ![Points on the paper, and a line across](pointsandline.png)
 
-This line divides the points into two sets, one above and one below the line. (The two sets are then called *linearly separable*[^linsep].)
+This line divides the points into two sets, one above and one below the line. (The two sets are then called [linearly separable][linsep].)
 
 A single perceptron, as bare and simple as it might appear, is able to learn where this line is, and when it finished learning, it can tell whether a given point is above or below that line.
 
@@ -370,32 +370,32 @@ Run the code a few times to see if the accuracy of the results changes considera
 
 ## Neural network libraries
 
-A number of neural network libraries [can be found on GitHub](https://github.com/search?o=desc&q=language%3Ago+neural&s=stars&type=Repositories&utf8=%E2%9C%93).
+A number of neural network libraries [can be found on GitHub](https://github.com/search?o=desc&q=language%3Ago+neural&s=stars&type=Repositories&utf8=%E2%9C%93 "github.com").
 
 
 ## Further reading
 
-[Chapter 10](http://natureofcode.com/book/chapter-10-neural-networks/) of the book "The Nature Of Code" gave me the idea to focus on a single perceptron only, rather than modelling a whole network. Also a good introductory read on neural networks.
+[Chapter 10](http://natureofcode.com/book/chapter-10-neural-networks/ "natureofcode.com") of the book "The Nature Of Code" gave me the idea to focus on a single perceptron only, rather than modelling a whole network. Also a good introductory read on neural networks.
 
 You *can* write a complete network in a few lines of code, as demonstrated in
-[A neural network in 11 lines of Python](http://iamtrask.github.io/2015/07/12/basic-python-network/)
+[A neural network in 11 lines of Python](http://iamtrask.github.io/2015/07/12/basic-python-network/ "iamtrask.github.io")
 --however, to be fair, the code is backed by a large numeric library!
 
-If you want to learn how a neuron with a sigmoid activation function works and how to build a small neural network based on such neurons, there is a three-part tutorial about that on Medium, starting with the post [How to build a simple neural network in 9 lines of Python code](https://medium.com/technology-invention-and-more/how-to-build-a-simple-neural-network-in-9-lines-of-python-code-cc8f23647ca1#.qvxmhqeuu).
+If you want to learn how a neuron with a sigmoid activation function works and how to build a small neural network based on such neurons, there is a three-part tutorial about that on Medium, starting with the post [How to build a simple neural network in 9 lines of Python code](https://medium.com/technology-invention-and-more/how-to-build-a-simple-neural-network-in-9-lines-of-python-code-cc8f23647ca1#.qvxmhqeuu "medium.com").
 
 
 
-<!-- footnotes -->
+<!-- Links -->
 
-[^ptron]: [Perceptrons on Wikipedia](https://en.wikipedia.org/wiki/Perceptron)
+[ptron]: https://en.wikipedia.org/wiki/Perceptron "Wikipedia: perceptron"
 
-[^ann]: [Artificial Neural Networks on Wikipedia](https://en.wikipedia.org/wiki/Artificial_neural_network)
+[ann]: https://en.wikipedia.org/wiki/Artificial_neural_network "Wikipedia: Artificial Neural Network"
 
-[^heavi]: [The Heaviside Step function on Wikipedia](https://en.wikipedia.org/wiki/Heaviside_step_function)
+[heavi]: https://en.wikipedia.org/wiki/Heaviside_step_function "Wikipedia: Heaviside Step function"
 
-[^linsep]: [Linear separability on Wikipedia](https://en.wikipedia.org/wiki/Linear_separability)
+[linsep]: https://en.wikipedia.org/wiki/Linear_separability "Wikipedia: Linear separability"
 
-[^backprop]: [Backpropagation on Wikipedia](https://en.wikipedia.org/wiki/Backpropagation)
+[backprop]: https://en.wikipedia.org/wiki/Backpropagation "Wikipedia: Backpropagation"
 
-[^sigmoid]: [The Sigmoid function on Wikipedia](https://en.wikipedia.org/wiki/Sigmoid_function)
+[sigmoid]: https://en.wikipedia.org/wiki/Sigmoid_function "Wikipedia: Sigmoid function"
 */
