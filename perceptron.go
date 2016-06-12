@@ -38,11 +38,11 @@ Have you ever wondered why there are tasks that are dead simple for any human bu
 
 ## What can neural networks do?
 
-ANN's have been sucessfully applied to a number of problem domains:
+ANN's have been successfully applied to a number of problem domains:
 
 * Classify data by recognizing patterns. Is this a tree on that picture?
 * Detect anomalies or novelties, when test data does *not* match the usual patterns. Is the truck driver at the risk of falling asleep? Are these seismic events showing normal ground motion or a big earthquake?
-* Process signals, for example, by filtering, sepataring, or compressing.
+* Process signals, for example, by filtering, separating, or compressing.
 * Approximate a target function--useful for predictions and forecasting. Will this storm turn into a tornado?
 
 Agreed, this sounds a bit abstract, so let's look at some real-world applications.
@@ -78,7 +78,7 @@ This is the learning strategy we'll use here.
 
 ### Unsupervised learning
 
-Useful if no test data is readily available, and if it is possible to derive some kind of *cost function* from the desired behavior. The cost function tells the neural network how much ist is off the target. The network then can adjust its parameters on the fly while working on the real data.
+Useful if no test data is readily available, and if it is possible to derive some kind of *cost function* from the desired behavior. The cost function tells the neural network how much it is off the target. The network then can adjust its parameters on the fly while working on the real data.
 
 ### Reinforced learning
 
@@ -126,7 +126,7 @@ The most basic form of an activation function is a simple binary function that h
 
 ![The Heaviside Step function](heaviside.png)
 
-Despite looking so simple, the function has a quite elaborate name: The [Heaviside Step function][heavi]. This function returns 1 if the input is positive or zero, and 0 for any negative input. A neuron whose actication function is a function like this is called a *perceptron*.
+Despite looking so simple, the function has a quite elaborate name: The [Heaviside Step function][heavi]. This function returns 1 if the input is positive or zero, and 0 for any negative input. A neuron whose activation function is a function like this is called a *perceptron*.
 
 ## Can we do something useful with a single perceptron?
 
@@ -227,7 +227,7 @@ We rule out the case where the line would be vertical. This allows us to specify
 
     y = ax + b
 
-Parameter *a* specifices the gradient of the line (that is, how steep the line is), and *b* sets the offset.
+Parameter *a* specifies the gradient of the line (that is, how steep the line is), and *b* sets the offset.
 
 By describing the line this way, checking whether a given point is above or below the line becomes very easy. For a point *(x,y)*, if the value of *y* is larger than the result of *f(x)*, then *(x,y)* is above the line.
 
@@ -362,7 +362,7 @@ Run the code a few times to see if the accuracy of the results changes considera
    * Try fewer iterations. What happens if you train the perceptron only 100 times? 10 times?
    * What happens if you skip the training completely?
 
-2. Change the learning rate to 0.01, 0.2, 0.0001, 0.5, 1,... while keeping the training interations constant. Do you see the accuracy change?
+2. Change the learning rate to 0.01, 0.2, 0.0001, 0.5, 1,... while keeping the training iterations constant. Do you see the accuracy change?
 
 
 **I hope you enjoyed this post. Have fun exploring Go!**
