@@ -114,7 +114,7 @@ When a signal comes in, it gets multiplied by a *weight* value that is assigned 
 
 In the next step, the modified input signals are summed up to a single value. In this step, an offset is also added to the sum. This offset is called *bias*. The neural network also adjusts the bias during the learning phase.
 
-This is where the magic happens! At the start, all the neurons have random weights and random biases. After each learning iteration, weights and biases are gradually shifted so that the next result is a bit closer to the desired output. This way, the neural network gradually moves towards
+This is where the magic happens! At the start, all the neurons have random weights and random biases. After each learning iteration, weights and biases are gradually shifted so that the next result is a bit closer to the desired output. This way, the neural network gradually moves towards a state where the desired patterns are "learned".
 
 #### 3. Activation
 
@@ -225,7 +225,7 @@ func (p *Perceptron) Adjust(inputs []int32, delta int32, learningRate float32) {
 
 We rule out the case where the line would be vertical. This allows us to specify the line as a linear function equation:
 
-    y = ax + b
+    f(x) = ax + b
 
 Parameter *a* specifies the gradient of the line (that is, how steep the line is), and *b* sets the offset.
 
@@ -398,4 +398,10 @@ If you want to learn how a neuron with a sigmoid activation function works and h
 [backprop]: https://en.wikipedia.org/wiki/Backpropagation "Wikipedia: Backpropagation"
 
 [sigmoid]: https://en.wikipedia.org/wiki/Sigmoid_function "Wikipedia: Sigmoid function"
+
+
+- - -
+
+**Changelog**
+2016-06-10 Typo: Finished an unfinished sentence. Changed y to f(x) in the equation `y= ax + b`, otherwise the following sentence (that refers to f(x)) would make not much sense.
 */
