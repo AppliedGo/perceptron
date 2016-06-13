@@ -272,9 +272,10 @@ func train(p *Perceptron, iters int, rate float32) {
 		// Feed the point to the perceptron and evaluate the result.
 		actual := p.Process(point)
 		expected := isAboveLine(point, f)
+		delta := expected - actual
 
 		// Have the perceptron adjust its internal values accordingly.
-		p.Adjust(point, expected-actual, rate)
+		p.Adjust(point, delta, rate)
 	}
 }
 
