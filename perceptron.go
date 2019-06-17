@@ -15,9 +15,9 @@ author = "Christoph Berger"
 email = "chris@appliedgo.net"
 date = "2016-06-09"
 publishdate = "2016-06-09"
-domains = ["Artificial Intelligence"]
+categories = ["Artificial Intelligence"]
 tags = ["Pattern Recognition", "Neural Network", "Machine Learning"]
-categories = ["Tutorial"]
+articletypes = ["Tutorial"]
 +++
 
 Artificial Neural Networks have gained attention during the recent years, driven by advances in deep learning. But what is an Artificial Neural Network and what is it made of?
